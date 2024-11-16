@@ -1,0 +1,4 @@
+[submodule "oqs-provider"]
+	path = oqs-provider
+	url = https://github.com/open-quantum-safe/oqs-provider.git
+	branch = 0.7.0-release

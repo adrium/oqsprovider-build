@@ -1,0 +1,63 @@
+name: Compile
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+
+  x64:
+    runs-on: [ubuntu-24.04]
+
+    env:
+      CMAKE_BUILD_TYPE: Release
+      LIBOQS_BRANCH: 0.11.0-release
+      BUILD_TESTING: OFF
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Install OS dependencies
+      run: 'sudo apt-get update && sudo apt-get install -y ninja-build gcc-aarch64-linux-gnu libc6-dev-arm64-cross libssl-dev'
+    - name: Build
+      working-directory: oqs-provider
+      run: './scripts/fullbuild.sh'
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: oqsprovider-linux-amd64
+        path: oqs-provider/_build/lib
+
+  aarch64:
+    runs-on: [ubuntu-24.04]
+
+    env:
+      CMAKE_PARAMS: >
+        -DCMAKE_SYSTEM_NAME=Linux
+        -DCMAKE_SYSTEM_PROCESSOR=aarch64
+        -DCMAKE_C_COMPILER=/usr/bin/aarch64-linux-gnu-gcc
+        -DCMAKE_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu
+      CMAKE_BUILD_TYPE: Release
+      LIBOQS_BRANCH: 0.11.0-release
+      OQS_LIBJADE_BUILD: OFF
+      BUILD_TESTING: OFF
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Install OS dependencies
+      run: 'sudo apt-get update && sudo apt-get install -y ninja-build gcc-aarch64-linux-gnu libc6-dev-arm64-cross'
+    - name: Change Ubuntu mirror
+      run: 'grep -lr ubuntu.com /etc/apt | sudo xargs sed -i s,azure.archive.ubuntu.com/ubuntu,ports.ubuntu.com/ubuntu-ports,'
+    - name: Install build dependencies
+      run: 'sudo dpkg --add-architecture arm64 && sudo apt-get update && sudo apt-get install libssl-dev:arm64'
+    - name: Build
+      working-directory: oqs-provider
+      run: './scripts/fullbuild.sh'
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: oqsprovider-linux-arm64
+        path: oqs-provider/_build/lib
