@@ -4,22 +4,22 @@ on:
   push:
     branches: [main]
 
+env:
+  CMAKE_BUILD_TYPE: Release
+  LIBOQS_BRANCH: "0.14.0"
+  BUILD_TESTING: OFF
+
 jobs:
 
   x64:
     runs-on: [ubuntu-24.04]
-
-    env:
-      CMAKE_BUILD_TYPE: Release
-      LIBOQS_BRANCH: 0.11.0-release
-      BUILD_TESTING: OFF
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Install OS dependencies
-      run: 'sudo apt-get update && sudo apt-get install -y ninja-build gcc-aarch64-linux-gnu libc6-dev-arm64-cross libssl-dev'
+      run: 'sudo apt-get update && sudo apt-get install -y ninja-build man-db- libssl-dev'
     - name: Build
       working-directory: oqs-provider
       run: './scripts/fullbuild.sh'
@@ -38,17 +38,14 @@ jobs:
         -DCMAKE_SYSTEM_PROCESSOR=aarch64
         -DCMAKE_C_COMPILER=/usr/bin/aarch64-linux-gnu-gcc
         -DCMAKE_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu
-      CMAKE_BUILD_TYPE: Release
-      LIBOQS_BRANCH: 0.11.0-release
       OQS_LIBJADE_BUILD: OFF
-      BUILD_TESTING: OFF
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Install OS dependencies
-      run: 'sudo apt-get update && sudo apt-get install -y ninja-build gcc-aarch64-linux-gnu libc6-dev-arm64-cross'
+      run: 'sudo apt-get update && sudo apt-get install -y ninja-build man-db- gcc-aarch64-linux-gnu libc6-dev-arm64-cross'
     - name: Change Ubuntu mirror
       run: 'grep -lr ubuntu.com /etc/apt | sudo xargs sed -i s,azure.archive.ubuntu.com/ubuntu,ports.ubuntu.com/ubuntu-ports,'
     - name: Install build dependencies
