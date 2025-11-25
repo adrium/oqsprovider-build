@@ -6,7 +6,7 @@ on:
 
 env:
   CMAKE_BUILD_TYPE: Release
-  LIBOQS_BRANCH: "0.14.0"
+  LIBOQS_BRANCH: "0.15.0"
   BUILD_TESTING: OFF
 
 jobs:
